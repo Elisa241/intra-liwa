@@ -1,10 +1,17 @@
 import prisma from "@/libs/prisma";
+import { createToken } from "@/utils/jwt";
+import { createResponse } from "@/utils/response";
 import bcrypt from 'bcryptjs';
 
-export async function POST(request : Request) {
-    const { username, password, role } = await request.json();
-
+export const POST = async (request : Request) => {
     try {
+        const body = await request.json();
+        const { username, password, role } = body;
+
+        if (!body || !body.username  || !body.password || !body.role) {
+            return createResponse(405, "All fields are required");
+        }
+        
         const exisitingUser = await prisma.user.findUnique({
             where : {
                 username : username,
@@ -12,56 +19,42 @@ export async function POST(request : Request) {
         })
 
         if (!exisitingUser) {
-            return Response.json({
-                status : 401,
-                message : "User not found"
-            });
+            return createResponse(402, "User not found");
         };
 
         const isPasswordValid = await bcrypt.compare(password, exisitingUser.password);
 
         if (!isPasswordValid) {
-            return new Response(
-                JSON.stringify({
-                    status: 401,
-                    message: 'Invalid password',
-                }),
-                { status: 401 }
-            );
+            return createResponse(401, "Invalid password");
         }
 
         if (role && exisitingUser?.role !== role) {
-            return new Response(
-                JSON.stringify({
-                    status: 403,
-                    message: 'Role does not match',
-                }),
-                { status: 403 }
-            );
+            return createResponse(403, "Role does not match");
         }
 
-        return new Response(
-            JSON.stringify({
-                status: 200,
-                message: 'Login successful',
-                user: {
-                    id: exisitingUser.id,
-                    username: exisitingUser.username,
-                    role: exisitingUser.role,
-                },
-            }),
-            { status: 200 }
-        );
+        const payload = {
+            username : exisitingUser.username,
+            id : exisitingUser.id,
+            role : exisitingUser.role
+        }
+
+        const token = createToken(payload);
+
+        await prisma.user.update({
+            where : {
+                id : exisitingUser.id
+            },
+            data : {
+                token : token
+            }
+        })
+
+        return createResponse(200, "Login successful", {
+            token : token
+        });
 
         
     } catch (error) {
-        console.log(error);
-        return new Response(
-            JSON.stringify({
-                status: 500,
-                message: 'Internal server error',
-            }),
-            { status: 500 }
-        );
+        return createResponse(500, "Internal Server Error");
     }
 }

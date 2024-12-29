@@ -20,24 +20,27 @@ const InputField = ({
     };
 
     return (
-        <div className={`w-full h-12 border-b flex items-center gap-3 px-2 ${className}`}>
-            {Icon && <Icon className="text-lg text-gray-400" />}
-            <input
-                type={showPassword && type === "password" ? "text" : type} // Mengubah type input jika showPassword true
-                value={value}
-                onChange={onChange}
-                className="flex flex-1 h-full outline-none border-none focus:border-none placeholder:font-light text-sm"
-                placeholder={placeholder}
-            />
-            {type === "password" && (
-                <div onClick={toggleShowPassword} className="cursor-pointer text-gray-400">
-                    {showPassword ? (
-                        <FaEyeSlash className="text-xl" />
-                    ) : (
-                        <FaEye className="text-xl" />
-                    )}
-                </div>
-            )}
+        <div className="flex flex-col gap-1">
+            <span className="text-xs font-medium">{label}</span>
+            <div className={`w-full h-12 border-b flex items-center gap-3 px-2 ${className}`}>
+                {Icon && <Icon className="text-lg text-gray-400" />}
+                <input
+                    type={showPassword && type === "password" ? "text" : type} // Mengubah type input jika showPassword true
+                    value={value}
+                    onChange={onChange}
+                    className="flex flex-1 h-full outline-none border-none focus:border-none placeholder:font-light text-sm"
+                    placeholder={placeholder}
+                />
+                {type === "password" && (
+                    <div onClick={toggleShowPassword} className="cursor-pointer text-gray-400">
+                        {showPassword ? (
+                            <FaEyeSlash className="text-xl" />
+                        ) : (
+                            <FaEye className="text-xl" />
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

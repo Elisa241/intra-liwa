@@ -1,6 +1,7 @@
 
+import { GifSpinner } from '@/assets/gif';
 import { ButtonSubmitProps } from '@/utils/interface/components';
-import ReactLoading from 'react-loading';
+import Image from 'next/image';
 
 const ButtonSubmit = ({
     title, 
@@ -16,7 +17,7 @@ const ButtonSubmit = ({
             onClick={onClick}
         >
             {isLoading ? (
-                <ReactLoading type={'spin'} color={'#ffffff'} height={20} width={20} />
+                <Image src={GifSpinner} alt='Gif Spinner white' height={20} width={20} />
             ) : (
                 <p className=' font-bold text-sm'>{title}</p>
             )}

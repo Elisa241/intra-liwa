@@ -26,4 +26,5 @@ model User {
   password String
   image    String?  // Optional field
   role     Role     // Enum field
+  token    String?
 }
