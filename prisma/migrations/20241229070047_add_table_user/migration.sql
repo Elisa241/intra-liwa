@@ -9,6 +9,7 @@ CREATE TABLE "User" (
     "password" TEXT NOT NULL,
     "image" TEXT,
     "role" "Role" NOT NULL,
+    "token" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );

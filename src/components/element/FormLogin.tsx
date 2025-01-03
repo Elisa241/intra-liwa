@@ -8,6 +8,9 @@ import { showDialog, showToast } from "@/utils/alertUtils";
 import Image from "next/image";
 import { IconsBoxes } from "@/assets/icons";
 import { FormLoginProps } from "@/utils/interface/components";
+import { useDispatch } from "react-redux";
+import { setToken } from "@/redux/authSlice";
+import { useRouter } from "next/navigation";
 
 
 const FormLogin = ({
@@ -16,6 +19,8 @@ const FormLogin = ({
     const [usernameValue, setUsernameValue] = useState<string>('')
     const [passwordValue, setPasswordValue] = useState<string>('')
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const dispatch = useDispatch();
+    const router = useRouter();
 
     const fetchSign = async () => {
         try {
@@ -43,8 +48,15 @@ const FormLogin = ({
                 }),
             });
 
+            const data = await response.json();
+            dispatch(setToken(data.data.token));
+
             if (response.status === 200) {
                 showToast('success', 'Login Berhasil!');
+
+                if (role === 'Administrator') {
+                    router.push('/')
+                }
             } else if (response.status === 402) {
                 showToast('error', 'Username tidak ditemukan');
             } else if (response.status === 403) {
@@ -54,6 +66,10 @@ const FormLogin = ({
             } else if (response.status === 405) {
                 showDialog('error', 'error', 'All Field Required!')
             }
+
+            
+
+           
         } catch (error) {
             console.log(error);
             showDialog('error', 'Error', 'Login Gagal!');

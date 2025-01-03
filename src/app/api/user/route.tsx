@@ -1,9 +1,6 @@
 import prisma from "@/libs/prisma";
-import { JWTPayload } from "@/utils/interface/payload";
-import { authorizeUser, verifyToken } from "@/utils/jwt";
 import { createResponse } from "@/utils/response";
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 
 export const POST = async (request : Request) => {
     try {
@@ -76,16 +73,7 @@ export const GET = async (request : Request) => {
 
         // Kembalikan response dengan data pengguna
         return createResponse(200, "Users retrieved successfully", users);
-    } catch (error : any) {
-        if (error.name === 'TokenExpiredError') {
-            return createResponse(401, "Token has expired");
-        }
-        if (error.name === 'JsonWebTokenError') {
-            return createResponse(403, "Invalid token signature");
-        }
-        if (error.name === 'NotBeforeError') {
-            return createResponse(403, "Token is not active yet");
-        }
+    } catch (error) {
         console.log(error);
         return createResponse(500, "Internal Server Error");
     }
@@ -96,7 +84,6 @@ export const PUT = async (request: Request) => {
         const body = await request.json();
         const { id, username, nama, password, role } = body;
 
-        // Validasi input
         if (!id) {
             return createResponse(400, "ID is required");
         }
@@ -143,7 +130,6 @@ export const DELETE = async (request: Request) => {
             return createResponse(400, "ID is required");
         }
 
-        // Mencari user berdasarkan ID
         const user = await prisma.user.findUnique({
             where: { id: id },
         });

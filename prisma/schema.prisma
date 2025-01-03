@@ -28,3 +28,45 @@ model User {
   role     Role     // Enum field
   token    String?
 }
+
+model Satuan {
+  id     String   @id @default(uuid())
+  nama   String   @unique
+  barang Barang[] // Relasi ke tabel Barang
+}
+
+model Jenis {
+  id     String   @id @default(uuid())
+  nama   String   @unique
+  barang Barang[] 
+}
+
+model Barang {
+  id           String   @id @default(uuid())
+  nama         String
+  stok_minimum Int
+  images       String
+  jenis_id     String
+  satuan_id    String
+  jenis        Jenis    @relation(fields: [jenis_id], references: [id])
+  satuan       Satuan   @relation(fields: [satuan_id], references: [id])
+  barangMasuk  BarangMasuk[]
+  barangKeluar BarangKeluar[]
+}
+
+model BarangMasuk {
+  id        String   @id @default(uuid())
+  tanggal   DateTime 
+  stock     Int
+  barang_id String
+  barang    Barang   @relation(fields: [barang_id], references: [id])
+}
+
+model BarangKeluar {
+  id        String   @id @default(uuid())
+  tanggal   DateTime 
+  stock     Int
+  barang_id String
+  barang    Barang   @relation(fields: [barang_id], references: [id])
+}
+

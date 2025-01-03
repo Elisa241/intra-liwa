@@ -3,13 +3,15 @@ import { IconType } from "react-icons";
 
 
 export interface InputFieldProps {
-    value? : string;
+    value? : string | number | undefined;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     label? : string;
     Icon? : IconType;
     type : string;
     placeholder : string;
     className?: string;
+    disabled? : boolean;
+    max? : number;
 }
 
 export interface ButtonSubmitProps {

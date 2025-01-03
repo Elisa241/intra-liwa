@@ -17,7 +17,7 @@ export async function middleware(request: Request) {
 
 // Tentukan beberapa path yang akan menggunakan middleware ini
 export const config = {
-    matcher: [
-        '/api/user/*',        // Semua path API
-    ],
+  mathcer : [
+    "/api/*"
+  ]
 };

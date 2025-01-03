@@ -12,6 +12,7 @@ const InputField = ({
   type,
   placeholder,
   className, // Terima className sebagai props
+  disabled
 }: InputFieldProps) => {
     const [showPassword, setShowPassword] = useState(false);
 
@@ -30,6 +31,7 @@ const InputField = ({
                     onChange={onChange}
                     className="flex flex-1 h-full outline-none border-none focus:border-none placeholder:font-light text-sm"
                     placeholder={placeholder}
+                    disabled={disabled}
                 />
                 {type === "password" && (
                     <div onClick={toggleShowPassword} className="cursor-pointer text-gray-400">

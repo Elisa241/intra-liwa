@@ -23,11 +23,11 @@ export const MenuAdmin: SidebarMenuProps[] = [
             },
             {
                 title : "Jenis Barang",
-                link : "/jenis-barang"
+                link : "/data-jenis"
             }, 
             {
                 title : "Satuan Barang",
-                link : "/satuan-barang"
+                link : "/data-satuan"
             }
         ]
     }, 
