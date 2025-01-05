@@ -4,7 +4,7 @@ import { SidebarMenuProps } from '@/utils/interface/components'
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React, { useState } from 'react'
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaCircle } from 'react-icons/fa';
 
 const SidebarMenu = ({
     title, 
@@ -18,54 +18,7 @@ const SidebarMenu = ({
 
     return (
         <>
-            {type === 'submenu' ? (
-                <div className="flex flex-col gap-4 text-[#8D9498] ">
-                    <div 
-                        onClick={() => setIsActive(!isActive)}
-                        className={`
-                            w-full h-12 flex items-center justify-between px-3 rounded  cursor-pointer hover:bg-primary hover:text-white `}
-                    >
-                        <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 center-flex text-xl">
-                                {Icon && 
-                                    <Icon  />
-                                }
-                            </div>
-                            <p className='text-sm'>
-                                {title}
-                            </p>
-                        </div>
-                        {isActive ? (
-                            <FaChevronUp
-                                className="text-sm "
-                            />
-                        ) : (
-                            <FaChevronDown 
-                                className="text-sm "
-                            />
-                        )}
-                    </div>
-
-                    <div className={`${isActive ? 'flex' : 'hidden'}
-                    
-                        flex-col gap-1 text-sm`}
-                    >
-                        {menu?.map((item, index) => (
-                            <Link
-                                href={item.link || '/'} 
-                                key={index} 
-                                className={`
-                                    ${pathname === item.link ? 'bg-gray-100' : 'bg-transparent'} rounded-lg
-                                    h-10 w-full px-2 flex items-center gap-2 cursor-pointer hover:bg-gray-100`}
-                            >
-                                <div className="h-10 w-10 ">
-                                </div>
-                                <p>{item.title}</p>
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-            ) : (
+            {type === 'button' ? (
                 <Link
                     href={link || ''}
                     className={` ${pathname === link ? 'bg-primary text-white'  : 'bg-transparent text-[#8D9498]'}
@@ -73,12 +26,64 @@ const SidebarMenu = ({
                     `}
                 >
                     <div className="h-10 w-10 center-flex text-2xl">
-                        {Icon && 
-                            <Icon  />
-                        }
+                        {Icon && <Icon />}
                     </div>
-                    <p className='text-sm'>{title}</p>
+                    <p className='text-xs'>{title}</p>
                 </Link>
+            ) : (
+                <div className='flex flex-col gap-2'>
+                    <p className="text-xs text-textColor font-normal">{title}</p>
+                    {menu && menu.map((item, index) => (
+                        <div key={index} >
+                            {item.type === 'button' ? (
+                                <Link
+                                    href={item.link || ''}
+                                    className={` ${pathname === item.link ? 'bg-primary text-white'  : 'bg-transparent text-textColor'}
+                                        w-full h-12 bg-primary rounded px-3 flex items-center gap-3 cursor-pointer hover:bg-primary hover:text-white
+                                    `}
+                                >
+                                    <div className="h-10 w-10 center-flex text-2xl">
+                                        {item.Icon && <item.Icon />}
+                                    </div>
+                                    <p className='text-xs'>{item.title}</p>
+                                </Link>
+                            ) : (
+                                <div className="flex flex-col gap-2">
+                                    <div 
+                                        onClick={() => setIsActive(!isActive)}
+                                        className='w-full h-12 bg-transparent rounded px-3 flex items-center justify-between gap-3 cursor-pointer hover:bg-primary hover:text-white text-textColor'
+                                    >
+                                        <div className='flex items-center gap-3'>
+                                            <div className="h-10 w-10 center-flex text-2xl">
+                                                {item.Icon && <item.Icon />}
+                                            </div>
+                                            <p className='text-xs'>{item.title}</p>
+                                        </div>
+                                        {isActive ? <FaChevronUp className='text-xs' /> : <FaChevronDown className='text-xs' />}
+                                    </div>
+                                    {isActive && (
+                                        <div className='flex flex-col gap-1'>
+                                            {item?.submenu && item?.submenu.map((item, index) => (
+                                                <Link
+                                                    href={item.link || ''}
+                                                    key={index} 
+                                                    className={`h-10 w-full bg-black rounded flex items-center px-3 text-xs hover:bg-primary gap-3 hover:text-white
+                                                        ${pathname === item.link ? 'bg-primary text-white' : 'bg-transparent text-textColor'}    
+                                                    `}
+                                                >
+                                                    <div className='h-10 w-10 center-flex'>
+                                                        <FaCircle className='text-[5px]' />
+                                                    </div>
+                                                    {item.title}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
             )}
         </>
     )

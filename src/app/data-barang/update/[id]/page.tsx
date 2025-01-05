@@ -1,6 +1,5 @@
 "use client";
 
-import { IconsImage } from "@/assets/icons";
 import LayoutAdmin from "@/components/layout/LayoutAdmin";
 import ButtonSubmit from "@/components/ui/ButtonSubmit";
 import InputField from "@/components/ui/InputField";
@@ -10,10 +9,10 @@ import { DataJenisBarang, DataSatuanBarang } from "@/utils/interface/data";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { FaChevronRight, FaDatabase } from "react-icons/fa";
-import { FaPhotoFilm } from "react-icons/fa6";
+import { useCallback, useEffect, useState } from "react";
+import {  FaDatabase } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 const Page = () => {
     const [dataJenis, setDataJenis] = useState<DataJenisBarang[] | null>(null);
@@ -32,7 +31,7 @@ const Page = () => {
     const params = useParams();
     const { id } = params;
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             const response = await fetch(`/api/barang?id=${id}`, {
                 method: 'GET',
@@ -40,35 +39,25 @@ const Page = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-            })
+            });
             const data = await response.json();
-            
+
             setAddData({
-                id : id || data.id,
+                id: id || data.id,
                 nama: data.data.nama,
-                stok_minimum : data.data.stok_minimum,
-                jenis_id : data.data.jenis_id,
-                satuan_id : data.data.satuan_id,
+                stok_minimum: data.data.stok_minimum,
+                jenis_id: data.data.jenis_id,
+                satuan_id: data.data.satuan_id,
                 image: data.data.image,
                 imageUpdate: null,
-            })
+            });
         } catch (error) {
             console.log(error);
         }
-    }
+    }, [id, token]); // Menambahkan id dan token sebagai dependensi
 
-    useEffect(() => {
-        fetchData();
-    }, [id]);
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-          const file = e.target.files[0];
-          setAddData({...addData, imageUpdate: file });
-        } 
-    };
-
-    const fetchDataJenis = async () => {
+    // Fungsi untuk mengambil data jenis barang
+    const fetchDataJenis = useCallback(async () => {
         try {
             const response = await fetch(`/api/jenis-barang`, {
                 method: 'GET',
@@ -79,13 +68,14 @@ const Page = () => {
             });
 
             const data = await response.json();
-            setDataJenis(data.data? data.data : null);
+            setDataJenis(data.data ? data.data : null);
         } catch (error) {
             console.log(error);
         }
-    };
+    }, [token]); // Menambahkan token sebagai dependensi
 
-    const fetchDataSatuan = async () => {
+    // Fungsi untuk mengambil data satuan barang
+    const fetchDataSatuan = useCallback(async () => {
         try {
             const response = await fetch(`/api/satuan-barang`, {
                 method: 'GET',
@@ -96,16 +86,27 @@ const Page = () => {
             });
 
             const data = await response.json();
-            setDataSatuan(data.data? data.data : null);
+            setDataSatuan(data.data ? data.data : null);
         } catch (error) {
             console.log(error);
         }
-    }
+    }, [token]); // Menambahkan token sebagai dependensi
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]); // Menambahkan fetchData sebagai dependensi
 
     useEffect(() => {
         fetchDataJenis();
         fetchDataSatuan();
-    }, [token]);
+    }, [fetchDataJenis, fetchDataSatuan]);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+          const file = e.target.files[0];
+          setAddData({...addData, imageUpdate: file });
+        } 
+    };
 
     const handleAddData = async () => {
         if (
@@ -159,16 +160,14 @@ const Page = () => {
     return (
         <LayoutAdmin>
             <div className="flex flex-col gap-10 w-full h-max">
-                <div className="flex items-center gap-5 text-white">
-                    <div className="flex items-center gap-2 text-white text-2xl">
-                        <FaDatabase />
-                        <h1 className="text-lg font-medium">Master Data</h1>
-                    </div>
-                    <div className="h-10 w-[1px] bg-white"></div>
-                    <p>Data Barang</p>
-                    <FaChevronRight />
-                    <p>Tambah</p>
-                </div>
+                <Breadcrumbs 
+                    Icon={FaDatabase}
+                    title="Master Data"
+                    link={[
+                        {title : "Data Barang", link : "/data-barang"},
+                        {title : "Update", link : `/data-barang/update/${id}`},
+                    ]}
+                />
                 <div className="w-full h-max bg-white rounded shadow-md flex flex-col ">
                     <div className="h-14 w-full border-b flex items-center px-5">
                         <h1>Entri Data Barang</h1>

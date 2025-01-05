@@ -1,5 +1,6 @@
 "use client";
 
+import { IconsUser } from "@/assets/icons";
 import LayoutAdmin from "@/components/layout/LayoutAdmin"
 import ButtonSubmit from "@/components/ui/ButtonSubmit";
 import InputField from "@/components/ui/InputField";
@@ -9,11 +10,13 @@ import { DataRole } from "@/data/role";
 import RootState from "@/redux/store";
 import { showConfirmDialog, showDialog, showToast } from "@/utils/alertUtils";
 import { DataUserProps } from "@/utils/interface/data";
-import { Paper } from "@mui/material";
+import {  Paper } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid"
-import { useEffect, useState } from "react";
-import { FaDatabase, FaEye, FaPen, FaTrash } from "react-icons/fa";
+import Image from "next/image";
+import { useCallback, useEffect, useState } from "react";
+import { FaDatabase, FaPen, FaTrash, FaUser } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 const Page = () => {
     const [data, setData] = useState<DataUserProps[] | null>(null);
@@ -27,8 +30,24 @@ const Page = () => {
         nama: "",
         username: "",
         password : "",
-        role: ""
+        role: "",
+        image : null as File | null,
     })
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+          const file = e.target.files[0];
+          setAddData({...addData, image: file });
+        } 
+    };
+
+    const handleFileUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+          const file = e.target.files[0];
+          setUpdateData({...updateData, imageUpdate: file });
+        } 
+    };
+
 
     // state update data
     const [isLoadingUpdate, setIsLoadingUpdate] = useState<boolean>(false);
@@ -38,7 +57,9 @@ const Page = () => {
         nama: "",
         username: "",
         password : "",
-        role: ""
+        role: "",
+        image : "",
+        imageUpdate : null as File | null,
     })  
 
     const filteredData = (data?.filter((item: DataUserProps) =>
@@ -79,11 +100,6 @@ const Page = () => {
             renderCell: (params : GridRenderCellParams) => (
                 <div className="flex gap-2 items-center h-full">
                     <button 
-                        className='h-8 w-8 rounded-full bg-purple-500 hover:bg-purple-600 center-flex text-white'
-                    >
-                        <FaEye />
-                    </button>
-                    <button 
                         onClick={() => handleModalsUpdate(params.id)}
                         className='h-8 w-8 rounded-full bg-blue-500 hover:bg-blue-600 center-flex text-white'
                     >
@@ -100,7 +116,7 @@ const Page = () => {
 
     ];
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             const response = await fetch(`/api/user`, {
                 method: 'GET',
@@ -108,18 +124,18 @@ const Page = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-            })
+            });
 
             const data = await response.json();
             setData(data.data ? data.data : null);
         } catch (error) {
-            console.log(error);
+            console.log(error); // Menambahkan logging untuk error
         }
-    }
+    }, [token]); // Token sebagai dependensi
 
     useEffect(() => {
         fetchData();
-    }, [token]);
+    }, [fetchData]);
 
     const handleCloseModalAdd = () => {
         setModalAdd(false);
@@ -127,7 +143,8 @@ const Page = () => {
             nama: "",
             username: "",
             password: "",
-            role: ""
+            role: "",
+            image: null as File | null,
         });
     }
 
@@ -138,7 +155,9 @@ const Page = () => {
             nama: "",
             username: "",
             password: "",
-            role: ""
+            role: "",
+            image : "",
+            imageUpdate : null as File | null,
         });
     }
 
@@ -160,7 +179,9 @@ const Page = () => {
                 nama: data.data.nama,
                 username: data.data.username,
                 password: '',
-                role: data.data.role
+                role: data.data.role,
+                image : data.data.image,
+                imageUpdate : null
             })
         } catch (error) {
             console.log(error);
@@ -172,13 +193,25 @@ const Page = () => {
         try {
             setIsLoadingUpdate(true);
 
+            const DataUpdate = new FormData();
+
+            DataUpdate.append('id', updateData.id);
+            DataUpdate.append('nama', updateData.nama);
+            DataUpdate.append('username', updateData.username);
+            DataUpdate.append('password', updateData.password);
+            DataUpdate.append('role', updateData.role);
+            DataUpdate.append('image', updateData.image);
+
+            if (updateData.imageUpdate) {
+                DataUpdate.append('imageUpdate', updateData.imageUpdate);
+            }
+
             const response = await fetch(`/api/user`, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify(updateData),
+                body: DataUpdate,
             })
 
             if (response.status === 200) {
@@ -206,14 +239,23 @@ const Page = () => {
         }
 
         try {
+            const DataAdd = new FormData;
+
+            DataAdd.append('username', addData.username);
+            DataAdd.append('password', addData.password);
+            DataAdd.append('role', addData.role);
+            DataAdd.append('nama', addData.nama);
+
+            if (addData.image) {
+                DataAdd.append('image', addData.image);
+            }
             
             const response = await fetch(`/api/user`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify(addData),
+                body: DataAdd
             })
 
             setIsLoadingAdd(true);
@@ -257,14 +299,13 @@ const Page = () => {
     return (
         <LayoutAdmin>
             <div className="flex flex-col gap-10 w-full h-max">
-                <div className="flex items-center gap-5 text-white">
-                    <div className="flex items-center gap-2 text-white text-2xl">
-                        <FaDatabase />
-                        <h1 className="text-lg font-medium">Master Data</h1>
-                    </div>
-                    <div className="h-10 w-[1px] bg-white"></div>
-                    <p>Data User</p>
-                </div>
+                <Breadcrumbs 
+                    Icon={FaDatabase}
+                    title="Master Data"
+                    link={[
+                        {title : "Data User", link : "/data-user"}
+                    ]}
+                />
                 <div className="w-full h-[700px] bg-white rounded shadow-md flex flex-col p-10 gap-7">
                     <div className="flex items-center justify-between w-full h-max gap-3 md:flex-row flex-col-reverse">
                         <input 
@@ -318,6 +359,32 @@ const Page = () => {
                 <div className="flex flex-col gap-7 w-full h-max">
                     <h1>Tambah User</h1>
                     <div className="flex flex-col w-full h-max gap-3 mb-5">
+                        <div className="flex flex-col gap-1">
+                            <span className="text-xs font-medium">Image Profile</span>
+                            <div className="h-24 w-full flex items-center gap-4 border rounded px-5" >
+                                {addData.image ? (
+                                    <div className="h-20 w-20 rounded-full center-flex" >
+                                        <Image 
+                                            src={URL.createObjectURL(addData.image)}
+                                            alt="Image add data"
+                                            width={100}
+                                            height={100}
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="h-20 w-20 rounded-full shadow center-flex bg-primary text-white">
+                                        <FaUser className="text-3xl" />
+                                    </div>
+                                )}
+                                <div className="h-12 flex-1 flex items-center">
+                                    <input 
+                                        type="file" 
+                                        className="w-full text-sm indent-3"
+                                        onChange={handleFileChange}
+                                    />
+                                </div>
+                            </div>
+                        </div>
                         <InputField 
                             label="Nama"
                             type="text"
@@ -368,6 +435,39 @@ const Page = () => {
                 <div className="flex flex-col gap-7 w-full h-max">
                     <h1>Update User</h1>
                     <div className="flex flex-col w-full h-max gap-3 mb-5">
+                         <div className="flex flex-col gap-1">
+                            <span className="text-xs font-medium">Image Profile</span>
+                            <div className="h-24 w-full flex items-center gap-4 border rounded px-5" >
+                                {updateData.imageUpdate ? (
+                                    <div className="h-20 w-20 rounded-full center-flex" >
+                                        <Image 
+                                            src={URL.createObjectURL(updateData.imageUpdate)}
+                                            alt="Image add data"
+                                            width={100}
+                                            height={100}
+                                            className="rounded-full h-20 w-20"
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="h-20 w-20 rounded-full center-flex" >
+                                        <Image 
+                                            src={updateData.image ? `http://localhost:3000/uploads/${updateData.image}` : IconsUser}
+                                            alt="Image add data"
+                                            width={100}
+                                            height={100}
+                                            className="rounded-full h-20 w-20"
+                                        />
+                                    </div>
+                                )}
+                                <div className="h-12 flex-1 flex items-center">
+                                    <input 
+                                        type="file" 
+                                        className="w-full text-sm indent-3"
+                                        onChange={handleFileUpdate}
+                                    />
+                                </div>
+                            </div>
+                        </div>
                         <InputField 
                             label="Nama"
                             type="text"

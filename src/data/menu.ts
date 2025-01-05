@@ -1,64 +1,224 @@
-import { SidebarMenuProps } from "@/utils/interface/components";
-import {  FaBoxOpen, FaDatabase, FaFileAlt, FaHome } from "react-icons/fa";
 
-export const MenuAdmin: SidebarMenuProps[] = [
-    {
-        title : "Dashboard",
-        Icon : FaHome,
-        link : "/"
+import { CiLogin, CiLogout } from "react-icons/ci";
+import {  FaBoxes, FaBoxOpen,  FaFile,  FaFileExport,  FaHome,  FaUser } from "react-icons/fa";
 
-    }, 
+
+export const DataMenuAdmin = [
     {
-        title : "Master Data",
-        Icon : FaDatabase,
-        type : "submenu",
-        menu : [
-            {
-                title : "Data User",
-                link : "/data-user"
-            },
-            {
-                title : "Data Barang",
-                link : "/data-barang"
-            },
-            {
-                title : "Jenis Barang",
-                link : "/data-jenis"
-            }, 
-            {
-                title : "Satuan Barang",
-                link : "/data-satuan"
-            }
-        ]
-    }, 
+        title: "Dashboard",
+        Icon: FaHome,
+        link: "/",
+        type: "button", // Menandai bahwa ini adalah tombol
+    },
     {
-        title : "Barang Masuk",
-        Icon : FaBoxOpen,
-        link : "/barang-masuk"
-    }, 
+        title: "Master",
+        Icon: null,
+        type: "submenu", // Menandai bahwa ini adalah menu
+        submenu: [
+            {
+                title: "Barang",
+                Icon: FaBoxes,
+                type: "menu",
+                submenu: [
+                    { title: "Data Barang", link: "/data-barang" },
+                    { title: "Jenis Barang", link: "/data-jenis" },
+                    { title: "Satuan Barang", link: "/data-satuan" },
+                ],
+            },
+        ],
+    },
     {
-        title : "Barang Keluar",
-        Icon : FaBoxOpen,
-        link : "/barang-keluar"
-    }, 
+        title: "Transaksi",
+        Icon: null,
+        type: "menu",
+        submenu: [
+            { 
+                title: "Barang Masuk", 
+                Icon: CiLogin, 
+                link: "/barang-masuk",
+                type : "button",
+                submenu : [
+
+                ]
+            },
+            { 
+                title: "Barang Keluar", 
+                Icon: CiLogout, 
+                link: "/barang-keluar",
+                type : "button",
+                submenu : [
+                    
+                ]
+            },
+        ],
+    },
     {
-        title : "Laporan",
-        Icon : FaFileAlt,
-        type : "submenu",
-        menu : [
-            {
-                title : "Laporan Stock",
-                link : "/laporan-stock"
+        title: "Laporan",
+        Icon: null,
+        type: "menu",
+        submenu: [
+            { 
+                title: "Laporan Stock", 
+                Icon: FaFile, 
+                link: "/laporan-stock",
+                type : "button",
+                submenu : [
+                    
+                ]
             },
-            {
-                title : "Laporan Barang Masuk",
-                link : "/barang"
+            { 
+                title: "Laporan Barang Masuk", 
+                Icon: FaFileExport, 
+                link: "/laporan-barang-masuk",
+                type : "button"
             },
-            {
-                title : "Laporan Barang Keluar",
-                link : "/jenis-barang"
+            { 
+                title: "Laporan Barang Keluar", 
+                Icon: FaFileExport, 
+                link: "/laporan-barang-keluar",
+                type : "button",
+                submenu : [
+                    
+                ]
             },
-        ]
-    }, 
- 
+        ],
+    },
+    {
+        title: "Manajemen User",
+        Icon: null,
+        type: "menu",
+        submenu: [
+            { 
+                title: "Manajemen User", 
+                Icon: FaUser, 
+                link: "/data-user", 
+                type : "button",
+                submenu : [
+                    
+                ]
+            },
+        ],
+    },
+];
+
+export const DataMenuAdminGudang = [
+    {
+        title: "Dashboard",
+        Icon: FaHome,
+        link: "/",
+        type: "button", // Menandai bahwa ini adalah tombol
+    },
+    {
+        title: "Master",
+        Icon: null,
+        type: "submenu", // Menandai bahwa ini adalah menu
+        submenu: [
+            {
+                title: "Barang",
+                Icon: FaBoxes,
+                type: "menu",
+                submenu: [
+                    { title: "Data Barang", link: "/data-barang" },
+                    { title: "Jenis Barang", link: "/data-jenis" },
+                    { title: "Satuan Barang", link: "/data-satuan" },
+                ],
+            },
+        ],
+    },
+    {
+        title: "Transaksi",
+        Icon: null,
+        type: "menu",
+        submenu: [
+            { 
+                title: "Barang Masuk", 
+                Icon: FaBoxOpen, 
+                link: "/barang-masuk",
+                type : "button",
+                submenu : [
+
+                ]
+            },
+            { 
+                title: "Barang Keluar", 
+                Icon: FaBoxOpen, 
+                link: "/barang-keluar",
+                type : "button",
+                submenu : [
+                    
+                ]
+            },
+        ],
+    },
+    {
+        title: "Laporan",
+        Icon: null,
+        type: "menu",
+        submenu: [
+            { 
+                title: "Laporan Stock", 
+                Icon: FaFile, 
+                link: "/laporan-stock",
+                type : "button",
+                submenu : [
+                    
+                ]
+            },
+            { 
+                title: "Laporan Barang Masuk", 
+                Icon: FaFileExport, 
+                link: "/laporan-barang-masuk",
+                type : "button"
+            },
+            { 
+                title: "Laporan Barang Keluar", 
+                Icon: FaFileExport, 
+                link: "/laporan-barang-keluar",
+                type : "button",
+                submenu : [
+                    
+                ]
+            },
+        ],
+    }
+]
+
+export const DataMenuKepalaGudang = [
+    {
+        title: "Dashboard",
+        Icon: FaHome,
+        link: "/",
+        type: "button", // Menandai bahwa ini adalah tombol
+    },
+    {
+        title: "Laporan",
+        Icon: null,
+        type: "menu",
+        submenu: [
+            { 
+                title: "Laporan Stock", 
+                Icon: FaFile, 
+                link: "/laporan-stock",
+                type : "button",
+                submenu : [
+                    
+                ]
+            },
+            { 
+                title: "Laporan Barang Masuk", 
+                Icon: FaFileExport, 
+                link: "/laporan-barang-masuk",
+                type : "button"
+            },
+            { 
+                title: "Laporan Barang Keluar", 
+                Icon: FaFileExport, 
+                link: "/laporan-barang-keluar",
+                type : "button",
+                submenu : [
+                    
+                ]
+            },
+        ],
+    },
 ]

@@ -27,8 +27,7 @@ export const POST = async (request : Request) => {
         });
 
         return createResponse(200, "success");
-    } catch (error) {
-        console.log(error)
+    } catch {
         return createResponse(500, "Internal Server Error");
     }
 }
@@ -61,7 +60,7 @@ export const GET = async (request : Request) => {
         }
 
         return createResponse(200, "success", data);
-    } catch (error) {
+    } catch {
         return createResponse(500, "Internal Server Error");
     }
 }
@@ -95,7 +94,7 @@ export const PUT = async (request : Request) => {
         })
 
         return createResponse(200, "Success");
-    } catch (error) {
+    } catch {
         return createResponse(500, "Internal Server Error");
     }
 }
@@ -126,7 +125,7 @@ export const DELETE = async (request : Request) => {
         })
 
         return createResponse(200, "Jenis barang deleted successfully");
-    } catch (error) {
+    } catch {
         return createResponse(500, "Internal Server Error");
     }
 }

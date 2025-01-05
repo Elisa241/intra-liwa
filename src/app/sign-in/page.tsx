@@ -1,7 +1,7 @@
 import FormLogin from "@/components/element/FormLogin"
 
 const Page = () => {
-    return <FormLogin role="Administrator" />
+    return <FormLogin />
 }
 
 export default Page

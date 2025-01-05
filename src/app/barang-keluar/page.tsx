@@ -7,9 +7,10 @@ import { DataBarangMasukProps } from "@/utils/interface/data";
 import { Paper } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid"
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { FaBoxOpen, FaDatabase, FaTrash } from "react-icons/fa";
+import { useCallback, useEffect, useState } from "react";
+import { FaBoxOpen, FaTrash } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 const Page = () => {
     const [data, setData] = useState<DataBarangMasukProps[] | null>(null);
@@ -37,7 +38,7 @@ const Page = () => {
         },
         {
             field : "stock",
-            headerName : "Jumlah Masuk",
+            headerName : "Jumlah Keluar",
             flex : 1,
             disableColumnMenu: true
         },
@@ -64,7 +65,7 @@ const Page = () => {
 
     ];
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             const response = await fetch(`/api/barang-keluar`, {
                 method: 'GET',
@@ -73,19 +74,17 @@ const Page = () => {
                     'Authorization': `Bearer ${token}`,
                 },
             });
-
+    
             const data = await response.json();
-            setData(data.data? data.data : null);
-
-            console.log(data);
+            setData(data.data ? data.data : null);
         } catch (error) {
             console.log(error);
         }
-    }
-
+    }, [token]); // menambahkan token sebagai dependensi untuk fetchData
+    
     useEffect(() => {
         fetchData();
-    }, [token]);
+    }, [fetchData]);
 
     const filteredData = (data?.filter((item: DataBarangMasukProps) =>
             item.nama_barang && item.nama_barang.toLowerCase().includes(searchTerm.toLowerCase())
@@ -120,14 +119,13 @@ const Page = () => {
     return (
         <LayoutAdmin>
             <div className="flex flex-col gap-10 w-full h-max">
-                <div className="flex items-center gap-5 text-white">
-                    <div className="flex items-center gap-2 text-white text-2xl">
-                        <FaBoxOpen />
-                        <h1 className="text-lg font-medium">Barang Keluar</h1>
-                    </div>
-                    <div className="h-10 w-[1px] bg-white"></div>
-                    <p>Data Barang Keluar</p>
-                </div>
+                <Breadcrumbs 
+                    Icon={FaBoxOpen}
+                    title="Barang Keluar"
+                    link={[
+                        {title : "Barang Keluar", link : "/barang-keluar"}
+                    ]}
+                />
                 <div className="w-full h-[700px] bg-white rounded shadow-md flex flex-col p-10 gap-7">
                     <div className="flex items-center justify-between w-full h-max gap-3 md:flex-row flex-col-reverse">
                         <input 

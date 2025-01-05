@@ -6,13 +6,14 @@ import Image from 'next/image';
 const ButtonSubmit = ({
     title, 
     onClick,
-    isLoading
+    isLoading,
+    style
 } : ButtonSubmitProps) => {
     return (
         <div
             className={`h-12 w-full bg-primary  hover:opacity-80
                 flex items-center justify-center rounded-full cursor-pointer
-                text-white
+                text-white ${style}
             `}
             onClick={onClick}
         >

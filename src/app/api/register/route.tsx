@@ -35,7 +35,7 @@ export const POST = async (request : Request) => {
 
         return createResponse(200, "success");
         
-    } catch (error) {
+    } catch {
         return createResponse(500, "Internal Server Error");
     }
 }

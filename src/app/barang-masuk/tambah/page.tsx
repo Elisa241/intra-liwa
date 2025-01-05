@@ -5,11 +5,12 @@ import ButtonSubmit from "@/components/ui/ButtonSubmit";
 import InputField from "@/components/ui/InputField";
 import RootState from "@/redux/store";
 import { showDialog, showToast } from "@/utils/alertUtils";
-import { DataBarangMasukProps, DataBarangProps, DataJenisBarang, DataSatuanBarang } from "@/utils/interface/data";
+import { DataBarangMasukProps, DataBarangProps } from "@/utils/interface/data";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { FaBoxOpen, FaChevronRight } from "react-icons/fa";
+import { useCallback, useEffect, useState } from "react";
+import { FaBoxOpen } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 const Page = () => {
     const [dataBarang, setDataBarang] = useState<DataBarangProps[] | null>(null);
@@ -19,12 +20,12 @@ const Page = () => {
         stock : "",
         barang_id : "",
     })
+    const [data, setData] = useState<DataBarangProps | null>(null)
     const [stockBarang, setStockBarang] = useState<string>('');
     const [totalStock, setTotalStock] = useState<number>(0);
     const token = useSelector((state : RootState) => state.auth.token);
 
-
-    const fetchDataBarang = async () => {
+    const fetchDataBarang = useCallback(async () => {
         try {
             const response = await fetch(`/api/barang`, {
                 method: 'GET',
@@ -35,14 +36,14 @@ const Page = () => {
             });
 
             const data = await response.json();
-            setDataBarang(data.data? data.data : null);
+            setDataBarang(data.data ? data.data : null);
         } catch (error) {
             console.log(error);
-            showDialog('error', 'error', "Internal server error");
+            showDialog('error', 'error', 'Internal server error');
         }
-    }
+    }, [token]);
 
-    const fetchDataBarangMasuk = async () => {
+    const fetchDataBarangMasuk = useCallback(async () => {
         try {
             const response = await fetch(`/api/barang?id=${addData.barang_id}`, {
                 method: 'GET',
@@ -53,28 +54,28 @@ const Page = () => {
             });
 
             const data = await response.json();
+            setData(data.data);
 
             if (Array.isArray(data.data.barangMasuk)) {
-                const totalStock = data.data.barangMasuk.reduce((acc : number, barang : DataBarangMasukProps) => {
-                    return acc + (Number(barang.stock) || 0); 
+                const totalStock = data.data.barangMasuk.reduce((acc: number, barang: DataBarangMasukProps) => {
+                    return acc + (Number(barang.stock) || 0);
                 }, 0);
-            
+
                 setStockBarang(totalStock);
             }
-
         } catch (error) {
             console.log(error);
-            showDialog('error', 'error', "Internal server error");
+            showDialog('error', 'error', 'Internal server error');
         }
-    }
+    }, [addData.barang_id, token]);
 
     useEffect(() => {
         fetchDataBarang();
-    }, [token]);
+    }, [fetchDataBarang]);
 
     useEffect(() => {
         fetchDataBarangMasuk();
-    }, [addData.barang_id]);
+    }, [fetchDataBarangMasuk]);
 
     const handleAddData = async () => {
         if (
@@ -125,16 +126,14 @@ const Page = () => {
     return (
         <LayoutAdmin>
             <div className="flex flex-col gap-10 w-full h-max">
-                <div className="flex items-center gap-5 text-white">
-                    <div className="flex items-center gap-2 text-white text-2xl">
-                        <FaBoxOpen />
-                        <h1 className="text-lg font-medium">Barang Masuk</h1>
-                    </div>
-                    <div className="h-10 w-[1px] bg-white"></div>
-                    <p>Barang Masuk</p>
-                    <FaChevronRight />
-                    <p>Tambah</p>
-                </div>
+                <Breadcrumbs 
+                    Icon={FaBoxOpen}
+                    title="Barang Masuk"
+                    link={[
+                        {title : "Barang Masuk", link : "/barang-masuk"},
+                        {title : "Tambah", link : "/barang-masuk/tambah"},
+                    ]}
+                />
                 <div className="w-full h-max bg-white rounded shadow-md flex flex-col ">
                     <div className="h-14 w-full border-b flex items-center px-5">
                         <h1>Entri Barang Masuk</h1>
@@ -166,10 +165,18 @@ const Page = () => {
                                 >
                                     <option value="">Pilih Jenis Barang</option>
                                     {dataBarang?.map((item, index) => (
-                                        <option key={index} value={item.id}>{item.nama}</option>
+                                        <option key={index} value={item.id}>{item.nama} - stock minimum {item.stok_minimum}</option>
                                     ))}
                                 </select>
                             </div>   
+                            <InputField 
+                                className="border rounded"
+                                placeholder=""
+                                label="Stock Minimum"
+                                type="text"
+                                disabled={true}
+                                value={data?.stok_minimum ? data.stok_minimum : "0"}
+                            />
                             <InputField 
                                 className="border rounded"
                                 placeholder=""

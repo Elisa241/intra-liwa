@@ -1,7 +1,7 @@
 
 import prisma from '@/libs/prisma';
 import { createResponse } from '@/utils/response';
-import { deleteImageFromBlob, uploadImage } from '@/utils/vercelBlob';
+import { deleteFile, uploadFile } from '@/utils/UploadFile';
 
 export const POST = async (request : Request) => {
     try {
@@ -17,7 +17,7 @@ export const POST = async (request : Request) => {
             return createResponse(400, "All fields are required");
         }
 
-        const url = await uploadImage(image);
+        const url = await uploadFile(image);
 
         if (!url) {
             return createResponse(400, "Failed to upload image");
@@ -117,7 +117,7 @@ export const DELETE = async (request : Request) => {
         }
 
         
-        await deleteImageFromBlob(data.images);
+        await deleteFile(data.images)
 
         await prisma.barang.delete({
             where: { id: id },
@@ -154,8 +154,8 @@ export const PUT = async (request: Request) => {
 
         // If a new image is provided, upload it and delete the old one
         if (image) {
-            await deleteImageFromBlob(data.images);
-            updatedImageUrl = await uploadImage(image);
+            await deleteFile(data.images)
+            updatedImageUrl = await uploadFile(image);
         }
 
         // Update the data in the database

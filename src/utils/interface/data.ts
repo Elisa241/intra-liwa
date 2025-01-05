@@ -26,7 +26,9 @@ export interface DataBarangProps {
     images? : string;
     jenis_barang? : string;
     satuan_barang? : string;
-    barangMasuk? : DataBarangMasukProps[]
+    totalStock? : number | string;
+    no? : string | number;
+    barangMasuk? : DataBarangMasukProps[] | DataBarangMasukProps
 }
 
 export interface DataBarangMasukProps {
@@ -49,4 +51,13 @@ export interface DataDashboardStats {
     satuan :  number;
     jenis :  number;
     user : number;
+}
+
+export interface DataUserProps {
+    id? : string;
+    nama? : string;
+    username? : string;
+    password? : string;
+    role? : string;
+    image? : string;
 }

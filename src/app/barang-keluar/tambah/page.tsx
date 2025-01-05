@@ -7,9 +7,10 @@ import RootState from "@/redux/store";
 import { showDialog, showToast } from "@/utils/alertUtils";
 import { DataBarangMasukProps } from "@/utils/interface/data";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { FaBox, FaChevronRight } from "react-icons/fa";
+import { useCallback, useEffect, useState } from "react";
+import { FaBoxOpen } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 const Page = () => {
     const [tanggalValue, setTanggalValue] = useState<string>('');
@@ -26,7 +27,7 @@ const Page = () => {
     const [stockBarang, setStockBarang] = useState<string>('');
     const [totalStock, setTotalStock] = useState<number>(0);
 
-    const fetchDataBarang = async () => {
+    const fetchDataBarang = useCallback(async () => {
         try {
             const response = await fetch(`/api/barang-masuk`, {
                 method: 'GET',
@@ -37,14 +38,16 @@ const Page = () => {
             });
 
             const data = await response.json();
-            setBarangMasukValue(data.data? data.data : null);
+            setBarangMasukValue(data.data || null);
         } catch (error) {
             console.log(error);
             showDialog('error', 'error', "Internal server error");
         }
-    }
+    }, [token]);
 
-    const fetchDataBarangMasuk = async () => {
+    const fetchDataBarangMasuk = useCallback(async () => {
+        if (!barangMasukIdValue) return; // Jangan lakukan fetch jika ID belum ada
+
         try {
             const response = await fetch(`/api/barang-masuk?id=${barangMasukIdValue}`, {
                 method: 'GET',
@@ -55,22 +58,21 @@ const Page = () => {
             });
 
             const data = await response.json();
-            setStockBarang(data.data.stock);
+            setStockBarang(data.data?.stock || 0); // Atur nilai default 0 jika tidak ada stock
             console.log(data);
-
         } catch (error) {
             console.log(error);
             showDialog('error', 'error', "Internal server error");
         }
-    }
+    }, [token, barangMasukIdValue]);
 
     useEffect(() => {
-        fetchDataBarang();
-    }, [token]);
+        fetchDataBarang(); // Hanya fetch barang masuk ketika token berubah
+    }, [fetchDataBarang]);
 
     useEffect(() => {
-        fetchDataBarangMasuk();
-    }, [barangMasukIdValue]);
+        fetchDataBarangMasuk(); // Hanya fetch barang masuk berdasarkan ID ketika ID berubah
+    }, [fetchDataBarangMasuk, barangMasukIdValue]); 
 
     const handleBarangChange = (id: string) => {
         const selected = BarangMasukValue?.find((item) => item.id === id);
@@ -147,16 +149,14 @@ const Page = () => {
     return (
         <LayoutAdmin>
             <div className="flex flex-col gap-10 w-full h-max">
-                <div className="flex items-center gap-5 text-white">
-                    <div className="flex items-center gap-2 text-white text-2xl">
-                        <FaBox />
-                        <h1 className="text-lg font-medium">Barang Keluar</h1>
-                    </div>
-                    <div className="h-10 w-[1px] bg-white"></div>
-                    <p>Barang Keluar</p>
-                    <FaChevronRight />
-                    <p>Tambah</p>
-                </div>
+                <Breadcrumbs 
+                    Icon={FaBoxOpen}
+                    title="Barang Keluar"
+                    link={[
+                        {title : "Barang Keluar", link : "/barang-keluar"},
+                        {title : "Tambah", link : "/barang-keluar/tambah"},
+                    ]}
+                />
                 <div className="w-full h-max bg-white rounded shadow-md flex flex-col ">
                     <div className="h-14 w-full border-b flex items-center px-5">
                         <h1>Entri Barang Keluar</h1>

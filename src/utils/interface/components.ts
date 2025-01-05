@@ -17,24 +17,28 @@ export interface InputFieldProps {
 export interface ButtonSubmitProps {
     title : string;
     onClick : () => void;
-    isLoading : boolean
+    isLoading : boolean;
+    style? : string;
 }
 
 export interface FormLoginProps {
     role? : string;
 }
 
-export interface SidebarSubMenuProps {
+interface SidebarSubMenuProps {
     title : string;
-    link : string | undefined;
+    link? : string;
+    type? : string;
+    Icon? : IconType;
+    submenu? : { title : string; link : string }[] ;
 }
 
 export interface SidebarMenuProps {
     title : string;
+    Icon? : IconType | null;
     link? : string;
-    Icon : IconType;
     type? : string;
-    menu? : SidebarSubMenuProps[] | undefined;
+    menu? : SidebarSubMenuProps[]
 }
 
 export interface LayoutAdminProps {
@@ -60,4 +64,20 @@ export interface SelectOptionsProps {
     label : string;
     className?: string;
     title? : string
+}
+
+export interface BreadcrumbsProps {
+    title : string;
+    link? : { link: string; title: string }[];
+    Icon? : IconType
+}
+
+export interface SidebarProps {
+    isActive : boolean;
+    setIsActive : (isActive: boolean) => void;
+}
+
+export interface NavbarProps {
+    isActive : boolean;
+    setIsActive : (isActive: boolean) => void;
 }

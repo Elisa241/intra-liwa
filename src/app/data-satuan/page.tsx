@@ -9,9 +9,10 @@ import { showConfirmDialog, showDialog, showToast } from '@/utils/alertUtils'
 import { DataSatuanBarang } from '@/utils/interface/data'
 import { Paper } from '@mui/material'
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { FaDatabase, FaPen, FaTrash } from 'react-icons/fa'
 import { useSelector } from 'react-redux'
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
 const Page = () => {
     const [data, setData] = useState<DataSatuanBarang[] | null>(null);
@@ -89,7 +90,7 @@ const Page = () => {
         no: index + 1,  // Menambahkan nomor berurutan mulai dari 1
     }));
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             const response = await fetch(`/api/satuan-barang`, {
                 method: 'GET',
@@ -97,18 +98,19 @@ const Page = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-            })
+            });
 
             const data = await response.json();
             setData(data.data ? data.data : null);
-        } catch (error) {
-            showDialog('error', "error", 'Internal server errror');
+        } catch (err) {
+            console.log(err); // Menambahkan logging untuk error
+            showDialog('error', 'error', 'Internal server error');
         }
-    }
+    }, [token]); // token sebagai dependensi
 
     useEffect(() => {
         fetchData();
-    }, [token])
+    }, [fetchData]); 
 
     const handleModalsUpdate = async (id : string | number | undefined) => {
         setModalUpdate(true);
@@ -216,14 +218,13 @@ const Page = () => {
     return (
         <LayoutAdmin>
             <div className='flex flex-col gap-10 w-full h-max'>
-                <div className="flex items-center gap-5 text-white">
-                    <div className="flex items-center gap-2 text-white text-2xl">
-                        <FaDatabase />
-                        <h1 className="text-lg font-medium">Master Data</h1>
-                    </div>
-                    <div className="h-10 w-[1px] bg-white"></div>
-                    <p>Data Satuan</p>
-                </div>
+                <Breadcrumbs 
+                    Icon={FaDatabase}
+                    title="Master Data"
+                    link={[
+                        {title : "Data Satuan", link : "/data-satuan"}
+                    ]}
+                />
                 <div className="w-full h-[700px] bg-white rounded shadow-md flex flex-col p-10 gap-7">
                     <div className="flex items-center justify-between w-full h-max gap-3 md:flex-row flex-col-reverse">
                         <input 

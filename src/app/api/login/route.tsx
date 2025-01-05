@@ -54,7 +54,7 @@ export const POST = async (request : Request) => {
         });
 
         
-    } catch (error) {
+    } catch {
         return createResponse(500, "Internal Server Error");
     }
 }

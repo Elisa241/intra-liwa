@@ -1,7 +1,24 @@
+import bcrypt from 'bcryptjs';
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
+  const hashedPassword = await bcrypt.hash('admin', 10);
+
+  await prisma.user.upsert({
+    where: { username: 'admin' },
+    update: {}, // Skip updating if the user exists
+    create: {
+      nama: 'admin',
+      username: 'admin',
+      password: hashedPassword,
+      role: 'ADMINISTRATOR', // Ensure this matches your Role enum values
+      image: null, // Optional field
+      token: null, // Optional field
+    },
+  });
+
+  console.log('Seeder executed: Admin user created.');
     // Seeder untuk Satuan Barang
     const satuanData = [
         { nama: 'Unit' },

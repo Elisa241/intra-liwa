@@ -1,7 +1,6 @@
 import prisma from "@/libs/prisma";
 import { createResponse } from "@/utils/response";
 
-
 export const POST = async (request : Request) => {
     try {
         const body = await request.json();
@@ -55,7 +54,7 @@ export const POST = async (request : Request) => {
 export const GET = async (request : Request) => {
     try {
         const url = new URL(request.url);
-        const { id, nama } = Object.fromEntries(url.searchParams)
+        const { id, nama, tanggalAwal, tanggalAkhir } = Object.fromEntries(url.searchParams)
 
         let data;
 
@@ -77,6 +76,23 @@ export const GET = async (request : Request) => {
                     barang : {
                         nama: { contains: nama, mode: 'insensitive' }
                     }
+                },
+                include : {
+                    barang : {
+                        include : {
+                            jenis : true,
+                            satuan : true
+                        }
+                    }
+                }
+            });
+        }  else if (tanggalAwal && tanggalAkhir) {
+            data = await prisma.barangKeluar.findMany({
+                where: {
+                    tanggal: {
+                        gte: new Date(tanggalAwal),
+                        lte: new Date(tanggalAkhir),
+                    },
                 },
                 include : {
                     barang : {

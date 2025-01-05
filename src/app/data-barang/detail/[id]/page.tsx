@@ -1,14 +1,15 @@
 "use client";
 
-import { IconsBoxClose, IconsBoxOpen, IconsImage } from '@/assets/icons';
+import {  IconsImage } from '@/assets/icons';
 import LayoutAdmin from '@/components/layout/LayoutAdmin'
 import RootState from '@/redux/store';
 import { DataBarangProps } from '@/utils/interface/data';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react'
-import { FaChevronRight, FaDatabase } from 'react-icons/fa'
+import React, { useCallback, useEffect, useState } from 'react'
+import { FaDatabase } from 'react-icons/fa'
 import { useSelector } from 'react-redux';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
 const Page = () => {
     const params = useParams();
@@ -16,7 +17,7 @@ const Page = () => {
     const [data, setData] = useState<DataBarangProps | null>(null);
     const token = useSelector((state : RootState) => state.auth.token);
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             const response = await fetch(`/api/barang?id=${id}`, {
                 method: 'GET',
@@ -24,33 +25,30 @@ const Page = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-            })
+            });
             const data = await response.json();
-            
-            setData(data.data)
+            setData(data.data);
         } catch (error) {
             console.log(error);
         }
-    }
+    }, [id, token]); // Menambahkan id dan token ke dependensi useCallback
 
     useEffect(() => {
-        fetchData();
-    }, [id]);
+        fetchData(); // Memanggil fetchData setiap kali id atau token berubah
+    }, [fetchData]);
 
 
     return (
         <LayoutAdmin>
             <div className="flex flex-col gap-10 w-full h-max">
-                <div className="flex items-center gap-5 text-white">
-                    <div className="flex items-center gap-2 text-white text-2xl">
-                        <FaDatabase />
-                        <h1 className="text-lg font-medium">Master Data</h1>
-                    </div>
-                    <div className="h-10 w-[1px] bg-white"></div>
-                    <p>Data Barang</p>
-                    <FaChevronRight />
-                    <p>Detail</p>
-                </div>
+                <Breadcrumbs 
+                    Icon={FaDatabase}
+                    title="Master Data"
+                    link={[
+                        {title : "Data Barang", link : "/data-barang"},
+                        {title : "Detail", link : `/data-barang/detail/${id}`},
+                    ]}
+                />
                 <div className="w-full h-max flex md:flex-row flex-col gap-5 ">
                     <div className='flex h-[500px] flex-1  bg-white rounded shadow-md flex-col'>
                         <div className="h-14 w-full border-b flex items-center px-5">
@@ -101,10 +99,11 @@ const Page = () => {
                     </div>
                     <div className='w-full md:w-[400px] h-[500px] bg-white rounded shadow center-flex'>
                         <Image 
-                            src={data?.images || IconsImage}
+                            src={data?.images ? `http://localhost:3000/uploads/${data?.images}` : IconsImage}
                             alt={`image ${data?.nama}`}
                             height={100}
                             width={100}
+                            className='h-32 w-32'
                         />
                     </div>
                 </div>

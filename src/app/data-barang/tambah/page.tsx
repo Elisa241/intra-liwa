@@ -8,10 +8,11 @@ import { showDialog, showToast } from "@/utils/alertUtils";
 import { DataJenisBarang, DataSatuanBarang } from "@/utils/interface/data";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { FaChevronRight, FaDatabase } from "react-icons/fa";
+import { useCallback, useEffect, useState } from "react";
+import { FaDatabase } from "react-icons/fa";
 import { FaPhotoFilm } from "react-icons/fa6";
 import { useSelector } from "react-redux";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 const Page = () => {
     const [dataJenis, setDataJenis] = useState<DataJenisBarang[] | null>(null);
@@ -33,7 +34,8 @@ const Page = () => {
         } 
     };
 
-    const fetchDataJenis = async () => {
+    // Fungsi untuk mengambil data jenis barang
+    const fetchDataJenis = useCallback(async () => {
         try {
             const response = await fetch(`/api/jenis-barang`, {
                 method: 'GET',
@@ -44,13 +46,14 @@ const Page = () => {
             });
 
             const data = await response.json();
-            setDataJenis(data.data? data.data : null);
+            setDataJenis(data.data ? data.data : null);
         } catch (error) {
             console.log(error);
         }
-    };
+    }, [token]); // Menambahkan token sebagai dependensi
 
-    const fetchDataSatuan = async () => {
+    // Fungsi untuk mengambil data satuan barang
+    const fetchDataSatuan = useCallback(async () => {
         try {
             const response = await fetch(`/api/satuan-barang`, {
                 method: 'GET',
@@ -61,16 +64,17 @@ const Page = () => {
             });
 
             const data = await response.json();
-            setDataSatuan(data.data? data.data : null);
+            setDataSatuan(data.data ? data.data : null);
         } catch (error) {
             console.log(error);
         }
-    }
+    }, [token]); // Menambahkan token sebagai dependensi
 
+    // useEffect untuk menjalankan fungsi saat token berubah
     useEffect(() => {
         fetchDataJenis();
         fetchDataSatuan();
-    }, [token]);
+    }, [fetchDataJenis, fetchDataSatuan]);
 
     const handleAddData = async () => {
         if (
@@ -126,16 +130,14 @@ const Page = () => {
     return (
         <LayoutAdmin>
             <div className="flex flex-col gap-10 w-full h-max">
-                <div className="flex items-center gap-5 text-white">
-                    <div className="flex items-center gap-2 text-white text-2xl">
-                        <FaDatabase />
-                        <h1 className="text-lg font-medium">Master Data</h1>
-                    </div>
-                    <div className="h-10 w-[1px] bg-white"></div>
-                    <p>Data Barang</p>
-                    <FaChevronRight />
-                    <p>Tambah</p>
-                </div>
+                <Breadcrumbs 
+                    Icon={FaDatabase}
+                    title="Master Data"
+                    link={[
+                        {title : "Data Barang", link : "/data-barang"},
+                        {title : "Tambah", link : "/data-barang/tambah"},
+                    ]}
+                />
                 <div className="w-full h-max bg-white rounded shadow-md flex flex-col ">
                     <div className="h-14 w-full border-b flex items-center px-5">
                         <h1>Entri Data Barang</h1>
