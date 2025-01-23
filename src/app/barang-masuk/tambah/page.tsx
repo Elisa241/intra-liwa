@@ -20,7 +20,7 @@ const Page = () => {
         stock : "",
         barang_id : "",
     })
-    const [data, setData] = useState<DataBarangProps | null>(null)
+    // hapus baris const [data, setData] = useState<DataBarangProps | null>(null)
     const [stockBarang, setStockBarang] = useState<string>('');
     const [totalStock, setTotalStock] = useState<number>(0);
     const token = useSelector((state : RootState) => state.auth.token);

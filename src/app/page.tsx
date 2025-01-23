@@ -2,7 +2,7 @@
 
 import { DataMenuHome } from "@/data/menu";
 import Link from "next/link";
-import React, { useState, useEffect } from "react";
+// hapus baris import React, { useState, useEffect } from "react";
 import { signOut } from "next-auth/react";
 
 const page = () => {
