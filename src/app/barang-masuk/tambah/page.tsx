@@ -20,7 +20,7 @@ const Page = () => {
         stock : "",
         barang_id : "",
     })
-    // hapus baris const [data, setData] = useState<DataBarangProps | null>(null)
+    //const [data, setData] = useState<DataBarangProps | null>(null)
     const [stockBarang, setStockBarang] = useState<string>('');
     const [totalStock, setTotalStock] = useState<number>(0);
     const token = useSelector((state : RootState) => state.auth.token);
@@ -54,7 +54,7 @@ const Page = () => {
             });
 
             const data = await response.json();
-            setData(data.data);
+           // setData(data.data);
 
             if (Array.isArray(data.data.barangMasuk)) {
                 const totalStock = data.data.barangMasuk.reduce((acc: number, barang: DataBarangMasukProps) => {

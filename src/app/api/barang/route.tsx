@@ -66,7 +66,7 @@ export const GET = async (request : Request) => {
             });
         } else if (nama) {
             barang = await prisma.barang.findMany({
-                where: { nama: { contains: nama, mode: 'insensitive' } },
+                where: { nama: { contains: nama.toLowerCase(), } },
                 include : {
                     jenis : true,
                     satuan : true,

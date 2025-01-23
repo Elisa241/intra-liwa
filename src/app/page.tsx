@@ -2,10 +2,10 @@
 
 import { DataMenuHome } from "@/data/menu";
 import Link from "next/link";
-// hapus baris import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { signOut } from "next-auth/react";
 
-const page = () => {
+const Page = () => {
   const [showAnimation, setShowAnimation] = useState(true);
 
   useEffect(() => {
@@ -328,4 +328,4 @@ const page = () => {
           );
         };
 
-        export default page;
+        export default Page;

@@ -65,7 +65,7 @@ export const GET = async (request : Request) => {
         } else if (username) {
             // Jika ada query username, cari berdasarkan username
             users = await prisma.user.findMany({
-                where: { username: { contains: username, mode: 'insensitive' } }, // insensitive untuk pencarian tidak case-sensitive
+                where: { username: { contains: username.toLowerCase(), } }, // insensitive untuk pencarian tidak case-sensitive
             });
         }  else {
             // Jika tidak ada query, ambil semua data pengguna
