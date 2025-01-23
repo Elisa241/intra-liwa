@@ -31,12 +31,6 @@ const Page = () => {
             disableColumnMenu: true,
         },
         {
-            field : "stok_minimum",
-            headerName : "Stok Minimum",
-            flex : 1,
-            disableColumnMenu: true
-        },
-        {
             field : "jenis",
             headerName : "Jenis Barang",
             flex : 1,
@@ -45,6 +39,12 @@ const Page = () => {
         {
             field : "satuan",
             headerName : "Satuan Barang",
+            flex : 1,
+            disableColumnMenu: true
+        },
+        {
+            field : "stok_minimum",
+            headerName : "Stok Minimum",
             flex : 1,
             disableColumnMenu: true
         },

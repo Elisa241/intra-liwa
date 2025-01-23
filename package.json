@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -33,6 +34,7 @@
     "react-redux": "^9.2.0",
     "sweetalert2": "^11.15.3",
     "sweetalert2-react-content": "^5.1.0",
+    "tsx": "^4.19.2",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

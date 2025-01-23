@@ -3,37 +3,44 @@ import prisma from '@/libs/prisma';
 import { createResponse } from '@/utils/response';
 import { deleteFile, uploadFile } from '@/utils/UploadFile';
 
-export const POST = async (request : Request) => {
+export const POST = async (request: Request) => {
     try {
         const formData = await request.formData();
-        
-        const image = formData.get('image') as File;
+
+        const image = formData.get('image') as File | null;
         const nama = formData.get('nama') as string;
         const stock_minimum = formData.get('stock_minimum') as string;
         const jenis_id = formData.get('jenis_id') as string;
         const satuan_id = formData.get('satuan_id') as string;
 
+        // Validasi input
         if (!nama || !stock_minimum || !jenis_id || !satuan_id) {
-            return createResponse(400, "All fields are required");
+            return createResponse(400, "All fields except image are required");
         }
 
-        const url = await uploadFile(image);
+        let url: string | null = null;
 
-        if (!url) {
-            return createResponse(400, "Failed to upload image");
-        }
+        // Jika ada file gambar, lakukan upload
+        if (image) {
+            url = await uploadFile(image);
 
-        await prisma.barang.create({
-            data : {
-                nama : nama,
-                stok_minimum : parseInt(stock_minimum, 10),
-                jenis_id : jenis_id,
-                satuan_id : satuan_id,
-                images : url
+            if (!url) {
+                return createResponse(400, "Failed to upload image");
             }
-        })
-  
-        return createResponse(200, "success");
+        }
+
+        // Buat data baru di database
+        await prisma.barang.create({
+            data: {
+                nama: nama,
+                stok_minimum: parseInt(stock_minimum, 10),
+                jenis_id: jenis_id,
+                satuan_id: satuan_id,
+                images : url
+            },
+        });
+
+        return createResponse(200, "Success");
     } catch (error) {
         console.log(error);
         return createResponse(500, "Internal Server Error");
@@ -116,8 +123,9 @@ export const DELETE = async (request : Request) => {
             return createResponse(404, "Data not found!");
         }
 
-        
-        await deleteFile(data.images)
+        if (data.images) {
+            await deleteFile(data.images)
+        }
 
         await prisma.barang.delete({
             where: { id: id },
@@ -154,7 +162,9 @@ export const PUT = async (request: Request) => {
 
         // If a new image is provided, upload it and delete the old one
         if (image) {
-            await deleteFile(data.images)
+            if (data.images) {
+                await deleteFile(data.images);
+            }
             updatedImageUrl = await uploadFile(image);
         }
 

@@ -2,36 +2,57 @@ import prisma from "@/libs/prisma";
 import { createResponse } from "@/utils/response";
 
 
-export const POST = async (request : Request) => {
+export const POST = async (request: Request) => {
     try {
         const body = await request.json();
         const { stock, tanggal, barang_id } = body;
-
-       // Validate input fields
-       if (!tanggal || !stock || !barang_id) {
+    
+        // Validate input fields
+        if (!tanggal || !stock || !barang_id) {
             return createResponse(400, "All fields (tanggal, stock, barang_id) are required");
         }
-
+    
         // Ensure tanggal is a valid date
         const parsedDate = new Date(tanggal);
         if (isNaN(parsedDate.getTime())) {
             return createResponse(400, "Invalid date format for tanggal");
         }
-
-        await prisma.barangMasuk.create({
-            data : {
-                tanggal : parsedDate,
-                stock : parseInt(stock),
-                barang_id
-            }
-        })
-
-        return createResponse(200, "success");
+    
+        // Check if barang_id and tanggal already exist
+        const existingBarang = await prisma.barangMasuk.findFirst({
+            where: {
+            barang_id,
+            tanggal: parsedDate,
+            },
+        });
+    
+        if (existingBarang) {
+            // Update existing entry if barang_id and tanggal match
+            await prisma.barangMasuk.update({
+            where: { id: existingBarang.id },
+            data: {
+                stock: existingBarang.stock + parseInt(stock), // Increment stock
+                // Add other fields to update if needed
+            },
+            });
+        } else {
+            // If no matching entry exists, create a new one
+            await prisma.barangMasuk.create({
+            data: {
+                tanggal: parsedDate,
+                stock: parseInt(stock),
+                barang_id,
+            },
+            });
+        }
+    
+        return createResponse(200, "Success");
     } catch (error) {
         console.log(error);
         return createResponse(500, "Internal Server Error");
     }
-}
+  };
+  
 
 export const GET = async (request : Request) => {
     try {
@@ -56,7 +77,7 @@ export const GET = async (request : Request) => {
             data = await prisma.barangMasuk.findMany({
                 where : {
                     barang : {
-                        nama: { contains: nama, mode: 'insensitive' }
+                        nama: { contains: nama }
                     }
                 },
                 include : {

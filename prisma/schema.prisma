@@ -45,7 +45,7 @@ model Barang {
   id           String   @id @default(uuid())
   nama         String
   stok_minimum Int
-  images       String
+  images       String?
   jenis_id     String
   satuan_id    String
   jenis        Jenis    @relation(fields: [jenis_id], references: [id])

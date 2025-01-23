@@ -24,6 +24,8 @@ export interface DataBarangProps {
     jenis_id : string;
     satuan_id : string;
     images? : string;
+    satuan? : string;
+    jenis? : string;
     jenis_barang? : string;
     satuan_barang? : string;
     totalStock? : number | string;

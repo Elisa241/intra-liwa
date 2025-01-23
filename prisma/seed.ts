@@ -1,6 +1,5 @@
 import bcrypt from 'bcryptjs';
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+import prisma from '@/libs/prisma';
 
 async function main() {
   const hashedPassword = await bcrypt.hash('admin', 10);
@@ -12,7 +11,7 @@ async function main() {
       nama: 'admin',
       username: 'admin',
       password: hashedPassword,
-      role: 'ADMINISTRATOR', // Ensure this matches your Role enum values
+      role: 'administrator', // Ensure this matches your Role enum values
       image: null, // Optional field
       token: null, // Optional field
     },

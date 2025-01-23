@@ -56,8 +56,8 @@ const Sidebar = ({
     }
 
     return (
-        <div className={`h-max min-h-screen w-[270px]  bg-white shadow-lg fixed ${isActive ? 'flex ' : 'hidden '}  flex-col gap-5 z-50 `}>
-            <div className="h-16 w-full bg-[#03387B] flex items-center justify-between px-5">
+        <div className={`h-screen overflow-x-auto w-[270px]  bg-white shadow-lg fixed ${isActive ? 'flex ' : 'hidden '}  flex-col gap-5 z-50 `}>
+            <div className="h-16 w-full bg-[#03387B] flex items-center justify-between px-5 flex-shrink-0">
                 <div className="flex items-center gap-4">
                     <Image 
                         src={IconsBoxes}

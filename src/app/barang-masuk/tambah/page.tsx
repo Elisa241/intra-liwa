@@ -165,18 +165,10 @@ const Page = () => {
                                 >
                                     <option value="">Pilih Jenis Barang</option>
                                     {dataBarang?.map((item, index) => (
-                                        <option key={index} value={item.id}>{item.nama} - stock minimum {item.stok_minimum}</option>
+                                        <option key={index} value={item.id}>{item.nama}</option>
                                     ))}
                                 </select>
                             </div>   
-                            <InputField 
-                                className="border rounded"
-                                placeholder=""
-                                label="Stock Minimum"
-                                type="text"
-                                disabled={true}
-                                value={data?.stok_minimum ? data.stok_minimum : "0"}
-                            />
                             <InputField 
                                 className="border rounded"
                                 placeholder=""

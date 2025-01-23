@@ -1,227 +1,331 @@
-'use client';
+"use client";
 
-import { IconsBoxClose, IconsBoxes, IconsBoxOpen } from "@/assets/icons";
-import LayoutAdmin from "@/components/layout/LayoutAdmin";
-import RootState from "@/redux/store";
-import { DataBarangMasukProps, DataBarangProps, DataDashboardStats } from "@/utils/interface/data";
-import { Paper } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
-import { FaBox, FaHome, FaInfo } from "react-icons/fa";
-import { useSelector } from "react-redux";
-import Breadcrumbs from "@/components/ui/Breadcrumbs";
+import { DataMenuHome } from "@/data/menu";
+import Link from "next/link";
+import React, { useState, useEffect } from "react";
+import { signOut } from "next-auth/react";
 
-const Home = () => {
-  const [data, setData] = useState<DataDashboardStats | null>(null);
-  const [barangMinimum, setBarangMinimum] = useState<DataBarangProps[] | null>(null);
-  const token = useSelector((state: RootState) => state.auth.token);
-
-  const fetchData = useCallback(async () => {
-    try {
-      const response = await fetch(`/api/dashboard-stats`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch dashboard stats");
-
-      const result = await response.json();
-      setData(result.data || null);
-    } catch (error) {
-      console.log("Error fetching dashboard stats:", error);
-    }
-  }, [token]);
-
-  const fetchDatBarang = useCallback(async () => {
-    try {
-      const response = await fetch(`/api/barang`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch barang data");
-
-      const result = await response.json();
-
-      const updatedData = result.data.map((item: DataBarangProps, index : number) => ({
-        ...item,
-        no : index + 1,
-        totalStock: Array.isArray(item.barangMasuk) // Pastikan `barangMasuk` adalah array
-          ? item.barangMasuk.reduce(
-              (acc: number, barang: DataBarangMasukProps) => acc + Number(barang.stock),
-              0
-            )
-          : 0, // Atur default jika `barangMasuk` tidak ada atau bukan array
-      }));
-
-      const lowStock = updatedData.filter(
-        (item: DataBarangProps) => Number(item.totalStock) <= Number(item.stok_minimum)
-      );
-
-      setBarangMinimum(lowStock);
-    } catch (error) {
-      console.log("Error fetching barang data:", error);
-    }
-  }, [token]);
+const page = () => {
+  const [showAnimation, setShowAnimation] = useState(true);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    const timer = setTimeout(() => {
+      setShowAnimation(false); // Sembunyikan animasi setelah beberapa detik
+    }, 6000); // Sesuaikan durasi animasi (dalam milidetik)
 
-  useEffect(() => {
-    fetchDatBarang();
-  }, [fetchDatBarang]);
+    return () => clearTimeout(timer); // Bersihkan timer saat komponen unmount
+  }, []);
 
-  const columns: GridColDef[] = [
-      {
-          field : "no",
-          headerName : "No",
-          flex : 0.3,
-          disableColumnMenu: true,
-      },
-      {
-          field : "nama",
-          headerName : "Nama",
-          flex : 1,
-          disableColumnMenu: true,
-      },
-      {
-          field : "totalStock",
-          headerName : "Stok",
-          flex : 1,
-          disableColumnMenu: true
-      },
-      {
-          field : "jenis",
-          headerName : "Jenis Barang",
-          flex : 1,
-          disableColumnMenu: true
-      },
-      {
-          field : "satuan",
-          headerName : "Satuan Barang",
-          flex : 1,
-          disableColumnMenu: true
-      },
-  ];
+  const handleLogout = () => {
+    signOut({ callbackUrl: "/sign-in" });
+  };
 
   return (
-    <LayoutAdmin>
-      <div className="flex flex-col gap-10 w-full h-max">
-        <Breadcrumbs 
-          Icon={FaHome}
-          title="Dashboard"
-          link={[
-              {title : "Dashboard", link : "/"}
-          ]}
-        />
+    <div className="w-full h-screen bg-black primary center-flex relative">
+      {showAnimation ? (
+        // Bagian logo animasi
+        <div className="logo-container">
+          <div className="square">
+            <div className="letter">I</div>
+            <div className="bottom-line"></div>
+            <div className="left-line"></div>
+          </div>
+          <div className="logo-text">INTRA LIWA</div>
+          <style jsx>{`
+            .logo-container {
+              text-align: center;
+              font-family: "Poppins", sans-serif;
+            }
 
-        <div className="h-max w-full bg-white rounded shadow-md grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 p-5">
-          <div className="flex items-center gap-3 h-28">
-            <div className="h-full w-32 center-flex">
-              <Image src={IconsBoxes} alt="IconsBoxes" className="h-16 w-16" />
+            .square {
+              position: relative;
+              width: 100px;
+              height: 100px;
+              margin: 0 auto;
+            }
+
+            .square::before,
+            .square::after {
+              content: "";
+              position: absolute;
+              background-color: #a020f0;
+              opacity: 0;
+            }
+
+            /* Garis atas */
+            .square::before {
+              top: 0;
+              left: 0;
+              height: 4px;
+              width: 100%;
+              animation: moveTopLine 2s forwards 2s; /* Muncul kedua */
+            }
+
+            /* Garis kanan */
+            .square::after {
+              top: 0;
+              right: 0;
+              width: 4px;
+              height: 100%;
+              animation: moveRightLine 2s forwards 2s; /* Muncul kedua */
+            }
+
+            .bottom-line {
+              position: absolute;
+              bottom: 0;
+              left: 25%; /* 25% lebar untuk celah */
+              background-color: #a020f0;
+              height: 4px;
+              width: 75%; /* Panjang garis bawah */
+              animation: moveBottomLine 2s forwards; /* Muncul pertama */
+            }
+
+            .left-line {
+              position: absolute;
+              top: 0;
+              left: 0;
+              background-color: #a020f0;
+              width: 4px;
+              height: 75%; /* Tinggi garis celah di bagian bawah */
+              animation: moveLeftLine 2s forwards; /* Muncul pertama */
+            }
+
+            @keyframes moveBottomLine {
+              0% {
+                width: 0;
+              }
+              100% {
+                width: 75%;
+              }
+            }
+
+            @keyframes moveLeftLine {
+              0% {
+                height: 0;
+              }
+              100% {
+                height: 75%;
+              }
+            }
+
+            @keyframes moveTopLine {
+              0% {
+                width: 0;
+                opacity: 1;
+              }
+              100% {
+                width: 100%;
+                opacity: 1;
+              }
+            }
+
+            @keyframes moveRightLine {
+              0% {
+                height: 0;
+                opacity: 1;
+              }
+              100% {
+                height: 100%;
+                opacity: 1;
+              }
+            }
+
+            .letter {
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              font-size: 30px;
+              color: #a020f0;
+              font-weight: bold;
+              opacity: 0;
+              visability: hidden;
+              animation: fadeInLetter 2s forwards 4s, rotateLetter 2s forwards 4s;
+            }
+
+            .logo-text {
+              margin-top: 10px;
+              font-size: 18px;
+              font-weight: 600;
+              color:white;
+              letter-spacing: 2px;
+              text-transform: uppercase;
+              opacity: 0;
+              visability: hidden;
+              animation: fadeInText 2s forwards 4s;
+            }
+
+            @keyframes fadeInText {
+              0% {
+                opacity: 0;
+                transform: translateY(20px);
+              }
+              100% {
+                opacity: 1;
+                transform: translateY(0);
+              }
+            }
+
+            @keyframes fadeInLetter {
+              0% {
+                opacity: 0;
+                display: none;
+              }
+              100% {
+                opacity: 1;
+                display: block;
+              }
+            }
+
+            @keyframes rotateLetter {
+              0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+              }
+              100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+              }
+            }
+          `}</style>
+        </div>
+      ) : (
+        // Bagian menu setelah animasi selesai
+        <>
+    <button
+      onClick={handleLogout}
+      className="px-6 py-3 bg-gradient-to-r from-[#6a0572] to-[#320d6d] text-white rounded-full text-lg font-semibold hover:opacity-90 transition-all duration-300 ease-in-out shadow-lg hover:shadow-2xl transform hover:scale-105 absolute top-4 right-4"
+  >
+        Logout
+    </button>
+
+        {/* Logo Intra Liwa di kiri atas */}
+        <div className="absolute top-4 left-4 flex items-center">
+          <div className="logo-container">
+            <div className="square">
+              <span className="letter">I</span>
+              <div className="top-line"></div>
+              <div className="right-line"></div>
+              <div className="bottom-line"></div>
+              <div className="left-line"></div>
             </div>
-            <div className="flex flex-col gap-3">
-              <h4 className="font-medium">Data Barang</h4>
-              <h5>{data?.barang}</h5>
-            </div>
+            <div className="logo-text">INTRA LIWA</div>
           </div>
 
-          <div className="flex items-center gap-3 h-28">
-            <div className="h-full w-32 center-flex">
-              <Image src={IconsBoxOpen} alt="IconsBoxOpen" className="h-16 w-16" />
-            </div>
-            <div className="flex flex-col gap-3">
-              <h4 className="font-medium">Data Barang Masuk</h4>
-              <h5>{data?.barangMasuk}</h5>
-            </div>
-          </div>
+          <style jsx>{`
+            .logo-container {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              font-family: "Poppins", sans-serif;
+            }
 
-          <div className="flex items-center gap-3 h-28">
-            <div className="h-full w-32 center-flex">
-              <Image src={IconsBoxClose} alt="IconsBoxClose" className="h-16 w-16" />
-            </div>
-            <div className="flex flex-col gap-3">
-              <h4 className="font-medium">Data Barang Keluar</h4>
-              <h5>{data?.barangKeluar}</h5>
-            </div>
-          </div>
+            .square {
+              position: relative;
+              width: 50px; /* Ukuran kotak */
+              height: 50px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            }
+
+            .letter {
+              font-size: 24px;
+              color: #a020f0; /* Warna huruf "I" */
+              font-weight: bold;
+            }
+
+            // Garis atas //
+            .top-line {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%; /* Panjang penuh untuk menyambung */
+              height: 4px;
+              background-color: #a020f0;
+            }
+
+            /* Garis kanan */
+            .right-line {
+              position: absolute;
+              top: 0;
+              right: 0;
+              width: 4px;
+              height: 100%; /* Tinggi penuh */
+              background-color: #a020f0;
+            }
+
+            /* Garis bawah */
+            .bottom-line {
+              position: absolute;
+              bottom: 0;
+              left: 12px; /* Celah di kiri bawah */
+              width: calc(100% - 12px); /* Panjang penuh dengan celah */
+              height: 4px;
+              background-color: #a020f0;
+            }
+
+            /* Garis kiri */
+            .left-line {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 4px;
+              height: calc(100% - 12px); /* Tinggi penuh dengan celah di bawah */
+              background-color: #a020f0;
+            }
+
+            .logo-text {
+              margin-top: 6px; /* Jarak antara kotak dan teks */
+              font-size: 14px; /* Ukuran teks */
+              font-weight: 600;
+              color: white; /* Warna teks */
+              letter-spacing: 2px;
+              text-transform: uppercase;
+            }
+          `}</style>
         </div>
 
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-          <div className="bg-white rounded shadow-md h-28 p-4 flex items-center gap-5">
-            <div className="h-full w-20 bg-blue-400 center-flex text-white text-3xl rounded">
-              <FaBox />
-            </div>
-            <div className="flex flex-col gap-1">
-              <h4 className="font-medium">Data Jenis Barang</h4>
-              <p>{data?.jenis}</p>
-            </div>
+
+        {/* Menu setelah animasi */}
+          <div className="w-[90%] max-w-[1200px] mx-auto mt-16">
+          
+          {/* Teks di atas menu */}
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-pink-800">Inventaris dan Kinerja</h2>
           </div>
 
-          <div className="bg-white rounded shadow-md h-28 p-4 flex items-center gap-5">
-            <div className="h-full w-20 bg-red-400 center-flex text-white text-3xl rounded">
-              <FaBox />
-            </div>
-            <div className="flex flex-col gap-1">
-              <h4 className="font-medium">Data Satuan</h4>
-              <p>{data?.satuan}</p>
-            </div>
-          </div>
+          {/* Grid menu */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {DataMenuHome.map((item, index) => (
+              <Link key={index} href={item.link}>
+                <div className="relative group h-[200px] bg-gradient-to-br from-[#6a0572] to-[#2cb67d] rounded-3xl p-6 flex flex-col justify-center items-center shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-500">
+                  
+                  {/* Ikon */}
+                    <div className="absolute top-[-20px] left-[-20px] w-[80px] h-[80px] bg-[#6a0572] rounded-full blur-2xl opacity-30"></div>
+                      <div className="absolute bottom-[-20px] right-[-20px] w-[80px] h-[80px] bg-[#2cb67d] rounded-full blur-2xl opacity-30"></div>
 
-          <div className="bg-white rounded shadow-md h-28 p-4 flex items-center gap-5">
-            <div className="h-full w-20 bg-yellow-400 center-flex text-white text-3xl rounded">
-              <FaBox />
-            </div>
-            <div className="flex flex-col gap-1">
-              <h4 className="font-medium">Data User</h4>
-              <p>{data?.user}</p>
-            </div>
+                  {/* Judul menu */}
+                    <p className="text-white font-semibold text-2xl mb-2 group-hover:text-[#f8f9fa] transition-colors duration-300">
+                      {item.title}
+                    </p>
+
+                  {/* Status */}
+                    {item.active === false && (
+                      <p className="text-sm font-light text-[#f8f9fa] mt-2 group-hover:text-gray-300 transition-all duration-300">
+                        Dalam Proses Pembuatan
+                      </p>
+                    )}
+
+                  {/* Efek hover tambahan */}
+                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
+                </>
+              )}
+            </div>
+          );
+        };
 
-        <div className="h-max w-full bg-white rounded shadow-md">
-          <div className="h-14 flex items-center gap-3 border-b px-6">
-            <FaInfo className="text-primary text-xl" />
-            <h4 className="text-sm">Stock barang yang mencapai batas minimum</h4>
-          </div>
-          <div className="w-full h-[500px] p-6">
-            <Paper 
-                sx={{
-                    height: "100%",
-                    width: "100%",
-                    overflowY: "auto",
-                    boxShadow: "none", // Hilangkan shadow
-                }}
-            >
-                <DataGrid 
-                    rows={barangMinimum || []}
-                    columns={columns}
-                    getRowClassName={(params) =>
-                        params.indexRelativeToCurrentPage % 2 !== 0 ? "row-odd" : ""
-                    }
-                    sx={{
-                        "& .row-odd": {
-                            backgroundColor: "#F9F9F9", // Warna abu-abu untuk baris ganjil
-                        "&:hover": {
-                        backgroundColor: "#F9F9F9", // Warna hover lebih terang
-                        },
-                    },
-                    }}
-                />
-            </Paper>
-          </div>
-        </div>
-      </div>
-    </LayoutAdmin>
-  );
-};
-
-export default Home;
+        export default page;

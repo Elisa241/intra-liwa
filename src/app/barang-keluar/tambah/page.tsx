@@ -188,7 +188,7 @@ const Page = () => {
                                 >
                                     <option value="">Pilih Jenis Barang</option>
                                     {BarangMasukValue?.map((item, index) => (
-                                        <option key={index} value={item.id}>{item.nama_barang}- {item.stock} {item.satuan_barang}</option>
+                                        <option key={index} value={item.id}>{item.nama_barang} {item.stock} {item.satuan_barang}</option>
                                     ))}
                                 </select>
                             </div>

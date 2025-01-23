@@ -81,8 +81,7 @@ const Page = () => {
             addData.nama === "" ||
             addData.stok_minimum === "" ||
             addData.jenis_id === "" ||
-            addData.satuan_id === "" ||
-            !addData.image
+            addData.satuan_id === "" 
         ) {
             showDialog('warning', "warning", "Semua kolom harus di isi!");
             return;

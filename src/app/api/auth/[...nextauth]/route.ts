@@ -29,23 +29,7 @@ const handler = NextAuth({
                     throw new Error('Invalid password');
                 }
 
-                const payload = {
-                    id: user.id,
-                    role : user.role
-                }
-
-                const token = createToken(payload);
-                
-                await prisma.user.update({
-                    where : {
-                        id : user.id
-                    },
-                    data : {
-                        token : token
-                    }
-                })
-
-                return { ...user, token };
+                return { ...user };
             }
         })
     ],

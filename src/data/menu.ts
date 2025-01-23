@@ -7,13 +7,13 @@ export const DataMenuAdmin = [
     {
         title: "Dashboard",
         Icon: FaHome,
-        link: "/",
-        type: "button", // Menandai bahwa ini adalah tombol
+        link: "/dashboard",
+        type: "button", // ini adalah tombol
     },
     {
         title: "Master",
         Icon: null,
-        type: "submenu", // Menandai bahwa ini adalah menu
+        type: "submenu", // ini adalah menu
         submenu: [
             {
                 title: "Barang",
@@ -220,5 +220,38 @@ export const DataMenuKepalaGudang = [
                 ]
             },
         ],
+    },
+]
+
+export const DataMenuHome = [
+    {
+        title : "Persediaan",
+        link : '/dashboard',
+        active : true,
+    },
+    {
+        title : "BMN",
+        link : '/',
+        active : false,
+    },
+    {
+        title : "Kinerja",
+        link : '/',
+        active : false,
+    },
+    {
+        title : "Kepegawaian",
+        link : '/',
+        active : false,
+    },
+    {
+        title : "Keuangan",
+        link : '/',
+        active : false,
+    },
+    {
+        title : "PPNPN",
+        link : '/',
+        active : false,
     },
 ]

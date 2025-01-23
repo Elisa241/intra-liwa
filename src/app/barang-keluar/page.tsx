@@ -37,14 +37,14 @@ const Page = () => {
             disableColumnMenu: true
         },
         {
-            field : "stock",
-            headerName : "Jumlah Keluar",
+            field : "satuan_barang",
+            headerName : "Satuan Barang",
             flex : 1,
             disableColumnMenu: true
         },
         {
-            field : "satuan_barang",
-            headerName : "Satuan Barang",
+            field : "stock",
+            headerName : "Jumlah Keluar",
             flex : 1,
             disableColumnMenu: true
         },

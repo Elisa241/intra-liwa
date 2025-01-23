@@ -74,7 +74,7 @@ export const GET = async (request : Request) => {
             data = await prisma.barangKeluar.findMany({
                 where : {
                     barang : {
-                        nama: { contains: nama, mode: 'insensitive' }
+                        nama: { contains: nama }
                     }
                 },
                 include : {
@@ -143,7 +143,7 @@ export const GET = async (request : Request) => {
 
 
 
-export const DELETE = async (request : Request) => {
+export const DELETE = async (request: Request) => {
     try {
         const url = new URL(request.url);
         const { id } = Object.fromEntries(url.searchParams);
@@ -152,15 +152,42 @@ export const DELETE = async (request : Request) => {
             return createResponse(400, "ID is required");
         }
 
+        // Find the data in barang_keluar to get related stock and barang_id
+        const barangKeluar = await prisma.barangKeluar.findUnique({
+            where: { id: id },
+        });
+
+        if (!barangKeluar) {
+            return createResponse(404, "Barang Keluar not found");
+        }
+
+        const { barang_id, stock } = barangKeluar;
+
+        // Find the corresponding entry in barang_masuk and update stock
+        const barangMasuk = await prisma.barangMasuk.findFirst({
+            where: { barang_id: barang_id },
+        });
+
+        if (!barangMasuk) {
+            return createResponse(404, "Barang Masuk not found");
+        }
+
+        // Update the stock in barang_masuk
+        await prisma.barangMasuk.update({
+            where: { id: barangMasuk.id },
+            data: {
+                stock: barangMasuk.stock + stock,
+            },
+        });
+
+        // Now, delete the data from barang_keluar
         await prisma.barangKeluar.delete({
-            where: {
-                id: id
-            }
-        })
+            where: { id: id },
+        });
 
         return createResponse(200, "success");
     } catch (error) {
         console.log(error);
         return createResponse(500, "Internal Server Error");
     }
-}
+};
